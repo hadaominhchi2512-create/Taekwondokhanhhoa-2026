@@ -441,7 +441,7 @@
         }
     }
 
-    function processDanhSachDangKy(data) {
+function processDanhSachDangKy(data) {
         dsDangKyDataArray = data; 
         
         let dsDonViSelect = document.getElementById('filter-ds-donvi');
@@ -453,10 +453,12 @@
             
             data.slice(1).forEach(row => {
                 if (!row[1]) return; 
-                let dv = row[5] ? row[5].toString().trim() : "";
+                // Cập nhật lại đúng vị trí cột ĐƠN VỊ là row[6]
+                let dv = row[6] ? row[6].toString().trim() : "";
                 if (dv && !uniqueDonVi.includes(dv)) uniqueDonVi.push(dv);
 
-                let hc = row[7] ? row[7].toString().trim() : "";
+                // Cập nhật lại đúng vị trí cột HẠNG CÂN là row[8]
+                let hc = row[8] ? row[8].toString().trim() : "";
                 if (hc && !uniqueHangCan.includes(hc)) uniqueHangCan.push(hc);
             });
             
@@ -483,27 +485,22 @@
             const row = dsDangKyDataArray[i];
             if (!row[1]) continue; 
             
-            let dv = row[5] ? row[5].toString().trim() : "";
-            let hc = row[7] ? row[7].toString().trim() : "";
+            // Cập nhật lại đúng cột lấy dữ liệu để Lọc
+            let dv = row[6] ? row[6].toString().trim() : "";
+            let hc = row[8] ? row[8].toString().trim() : "";
             
             if (filterDonVi !== 'all' && dv !== filterDonVi) continue;
             if (filterHangCan !== 'all' && hc !== filterHangCan) continue;
             
             count++; 
             
+            // Cập nhật lại đúng thứ tự cột hiển thị ra bảng (bỏ qua cột row[2] chứa chữ "VĐV")
             let html = `
                 <tr>
                     <td>${count}</td>
                     <td>${row[0] || ""}</td>
                     <td style="text-align:left; font-weight:bold;">${row[1] || ""}</td>
-                    <td>${row[2] || ""}</td>
-                    <td>${row[3] || ""}</td>
-                    <td>${row[4] || ""}</td>
-                    <td style="text-align:left;">${row[5] || ""}</td>
-                    <td>${row[6] || ""}</td>
-                    <td><span style="color:#ef4444; font-weight:bold;">${row[7] || ""}</span></td>
-                    <td>${row[8] || ""}</td>
-                </tr>
+                    <td>${row[3] || ""}</td> <td>${row[4] || ""}</td> <td>${row[5] || ""}</td> <td style="text-align:left;">${row[6] || ""}</td> <td>${row[7] || ""}</td> <td><span style="color:#ef4444; font-weight:bold;">${row[8] || ""}</span></td> <td>${row[9] || ""}</td> </tr>
             `;
             tbody.innerHTML += html;
         }
