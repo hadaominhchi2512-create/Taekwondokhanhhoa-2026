@@ -282,6 +282,18 @@
     </div>
 
     <div id="tab-dsdk" class="tab-content">
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid #e2e8f0; align-items: center; flex-wrap: wrap;">
+            <b style="color: #0f4a7c;"><i class="fa-solid fa-filter"></i> Lọc VĐV:</b>
+            <select id="filter-ds-donvi" onchange="applyDSDKFilters()" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; font-size: 13px; cursor: pointer;">
+                <option value="all">-- Tất cả Đơn vị / CLB --</option>
+            </select>
+            <select id="filter-ds-hangcan" onchange="applyDSDKFilters()" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; font-size: 13px; cursor: pointer;">
+                <option value="all">-- Tất cả Hạng cân --</option>
+            </select>
+            <div style="margin-left: auto; font-size: 14px; font-weight: bold; color: #ef4444;">
+                Tìm thấy: <span id="count-dsdk">0</span> VĐV
+            </div>
+        </div>
         <div class="table-wrapper">
             <table id="ds-table">
                 <thead>
@@ -289,13 +301,13 @@
                         <th style="width: 40px;">STT</th>
                         <th>MÃ HỘI VIÊN</th>
                         <th>HỌ VÀ TÊN</th>
+						<th>CHỨC VỤ</th>
                         <th>GIỚI TÍNH</th>
                         <th>NGÀY SINH</th>
                         <th>CẤP ĐẲNG</th>
                         <th>ĐƠN VỊ</th>
                         <th>NHÓM THI ĐẤU</th>
                         <th>HẠNG CÂN</th>
-                        <th>ẢNH</th>
                     </tr>
                 </thead>
                 <tbody id="ds-table-body"></tbody>
@@ -363,11 +375,12 @@
 
 <script>
     let detailDataArray = [];
+    let dsDangKyDataArray = [];
     let genderChartInstance = null;
     let top5ChartInstance = null;
     Chart.register(ChartDataLabels);
 
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbwJFhQIpeQogTkdhKhzh2Ias3OZQpPXNNoB3LSSJs9as5OrSS13qo1Mn7mL9Nj7SMGC/exec";
+    const GOOGLE_API_URL = "DÁN_LINK_WEB_APP_CỦA_ÔNG_VÀO_ĐÂY";
 
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -429,14 +442,58 @@
     }
 
     function processDanhSachDangKy(data) {
+        dsDangKyDataArray = data; 
+        
+        let dsDonViSelect = document.getElementById('filter-ds-donvi');
+        let dsHangCanSelect = document.getElementById('filter-ds-hangcan');
+        
+        if (dsDonViSelect.options.length <= 1) {
+            let uniqueDonVi = [];
+            let uniqueHangCan = [];
+            
+            data.slice(1).forEach(row => {
+                if (!row[1]) return; 
+                let dv = row[5] ? row[5].toString().trim() : "";
+                if (dv && !uniqueDonVi.includes(dv)) uniqueDonVi.push(dv);
+
+                let hc = row[7] ? row[7].toString().trim() : "";
+                if (hc && !uniqueHangCan.includes(hc)) uniqueHangCan.push(hc);
+            });
+            
+            uniqueDonVi.sort().forEach(dv => {
+                dsDonViSelect.innerHTML += `<option value="${dv}">${dv}</option>`;
+            });
+            uniqueHangCan.sort().forEach(hc => {
+                dsHangCanSelect.innerHTML += `<option value="${hc}">${hc}</option>`;
+            });
+        }
+        applyDSDKFilters();
+    }
+
+    function applyDSDKFilters() {
+        let filterDonVi = document.getElementById('filter-ds-donvi').value;
+        let filterHangCan = document.getElementById('filter-ds-hangcan').value;
+        
         const tbody = document.getElementById('ds-table-body');
         tbody.innerHTML = "";
-        for (let i = 1; i < data.length; i++) {
-            const row = data[i];
+        
+        let count = 0;
+        
+        for (let i = 1; i < dsDangKyDataArray.length; i++) {
+            const row = dsDangKyDataArray[i];
             if (!row[1]) continue; 
+            
+            let dv = row[5] ? row[5].toString().trim() : "";
+            let hc = row[7] ? row[7].toString().trim() : "";
+            
+            if (filterDonVi !== 'all' && dv !== filterDonVi) continue;
+            if (filterHangCan !== 'all' && hc !== filterHangCan) continue;
+            
+            count++; 
+            
             let html = `
                 <tr>
-                    <td>${i}</td>
+                    <td>${count}</td>
                     <td>${row[0] || ""}</td>
                     <td style="text-align:left; font-weight:bold;">${row[1] || ""}</td>
                     <td>${row[2] || ""}</td>
@@ -450,6 +507,8 @@
             `;
             tbody.innerHTML += html;
         }
+        
+        document.getElementById('count-dsdk').innerText = count;
     }
 
     function processData(rowsTongSap, rowsChiTiet) {
