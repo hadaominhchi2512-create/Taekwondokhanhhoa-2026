@@ -453,11 +453,11 @@ function processDanhSachDangKy(data) {
             
             data.slice(1).forEach(row => {
                 if (!row[1]) return; 
-                // Cập nhật lại đúng vị trí cột ĐƠN VỊ là row[6]
+                // ĐƠN VỊ giờ đã bị đẩy sang cột số 6 (cột G)
                 let dv = row[6] ? row[6].toString().trim() : "";
                 if (dv && !uniqueDonVi.includes(dv)) uniqueDonVi.push(dv);
 
-                // Cập nhật lại đúng vị trí cột HẠNG CÂN là row[8]
+                // HẠNG CÂN giờ đã bị đẩy sang cột số 8 (cột I)
                 let hc = row[8] ? row[8].toString().trim() : "";
                 if (hc && !uniqueHangCan.includes(hc)) uniqueHangCan.push(hc);
             });
@@ -485,7 +485,7 @@ function processDanhSachDangKy(data) {
             const row = dsDangKyDataArray[i];
             if (!row[1]) continue; 
             
-            // Cập nhật lại đúng cột lấy dữ liệu để Lọc
+            // Cập nhật lại cột để Lọc
             let dv = row[6] ? row[6].toString().trim() : "";
             let hc = row[8] ? row[8].toString().trim() : "";
             
@@ -494,13 +494,11 @@ function processDanhSachDangKy(data) {
             
             count++; 
             
-            // Cập nhật lại đúng thứ tự cột hiển thị ra bảng (bỏ qua cột row[2] chứa chữ "VĐV")
+            // Cập nhật lại hiển thị: Bổ sung row[2] là Chức vụ, đẩy các cột khác lùi lại 1 số
             let html = `
                 <tr>
                     <td>${count}</td>
-                    <td>${row[0] || ""}</td>
-                    <td style="text-align:left; font-weight:bold;">${row[1] || ""}</td>
-                    <td>${row[3] || ""}</td> <td>${row[4] || ""}</td> <td>${row[5] || ""}</td> <td style="text-align:left;">${row[6] || ""}</td> <td>${row[7] || ""}</td> <td><span style="color:#ef4444; font-weight:bold;">${row[8] || ""}</span></td> <td>${row[9] || ""}</td> </tr>
+                    <td>${row[0] || ""}</td> <td style="text-align:left; font-weight:bold;">${row[1] || ""}</td> <td>${row[2] || ""}</td> <td>${row[3] || ""}</td> <td>${row[4] || ""}</td> <td>${row[5] || ""}</td> <td style="text-align:left;">${row[6] || ""}</td> <td>${row[7] || ""}</td> <td><span style="color:#ef4444; font-weight:bold;">${row[8] || ""}</span></td> <td>${row[9] || ""}</td> </tr>
             `;
             tbody.innerHTML += html;
         }
