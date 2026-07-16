@@ -7,7 +7,48 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    
+    /* ===== BỔ SUNG: GIAO DIỆN DI ĐỘNG (MOBILE RESPONSIVE) ===== */
+        @media (max-width: 768px) {
+            /* 1. Logo và Header thu gọn */
+            .header-banner h1 { font-size: 16px; text-align: center; margin-top: 10px; }
+            .header-banner h2 { font-size: 12px; }
+            .logo-liendoan { height: 60px; left: 10px; top: 20px; transform: none; position: relative; left: 0; top: 0; margin-bottom: 10px; }
+            
+            /* 2. Cụm bộ lọc và nút bấm tràn viền dễ bấm */
+            .controls-container { flex-direction: column; width: 100%; box-sizing: border-box; padding: 15px 10px; }
+            .filters { justify-content: center; flex-direction: column; width: 100%; }
+            .filters select, .btn-dang-ky, .btn-dieu-le, .btn-so-do { width: 100%; box-sizing: border-box; justify-content: center; }
+            .action-buttons { border-left: none; padding-left: 0; margin-left: 0; justify-content: center; width: 100%; display: flex; flex-direction: column; margin-top: 5px; }
+            .btn-action { width: 100%; justify-content: center; }
+
+            /* 3. Bốn thẻ tổng quan chia làm 2 hàng (2x2) */
+            .dashboard-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .card { padding: 15px 10px; }
+            .card .num { font-size: 26px; }
+            .card h3 { font-size: 11px; }
+
+            /* 4. Biểu đồ xếp dọc */
+            .charts-container { grid-template-columns: 1fr; gap: 15px; }
+
+            /* 5. Cụm thanh Tab: Có thể vuốt ngang, không bị bóp méo */
+            .tabs { 
+                overflow-x: auto !important; 
+                white-space: nowrap; 
+                -webkit-overflow-scrolling: touch; 
+                padding-bottom: 5px; 
+                justify-content: flex-start;
+            }
+            .tab-btn { flex: 0 0 auto; font-size: 14px; padding: 8px 12px; }
+
+            /* 6. Bảng dữ liệu: Giữ nguyên form, cho phép người dùng vuốt sang phải để xem */
+            .table-wrapper { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            table { min-width: 900px; } /* Ép bảng giữ độ rộng chuẩn, người dùng lướt ngang để xem đầy đủ cột */
+            
+            /* 7. Bộ lọc trong Tab Danh Sách Đăng Ký */
+            #tab-dsdk > div:first-child { flex-direction: column; align-items: flex-start; }
+            #tab-dsdk > div:first-child select { width: 100%; margin-top: 5px; }
+            #tab-dsdk > div:first-child > div { margin-left: 0; margin-top: 10px; width: 100%; text-align: center; }
+        }
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f9; color: #333; margin: 0; padding-bottom: 50px; }
         .container { max-width: 1200px; margin: auto; padding: 20px; }
