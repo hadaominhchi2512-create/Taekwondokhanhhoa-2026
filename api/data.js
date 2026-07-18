@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   // DÁN LINK GOOGLE APPS SCRIPT CỦA ÔNG VÀO GIỮA 2 DẤU NGOẶC KÉP BÊN DƯỚI
-  const googleUrl = "LINK_GOOGLE_APP_SCRIPT_CU_CUA_ONG_VAO_DAY";
+  const googleUrl = "https://script.google.com/macros/s/AKfycbwJFhQIpeQogTkdhKhzh2Ias3OZQpPXNNoB3LSSJs9as5OrSS13qo1Mn7mL9Nj7SMGC/exec";
   
   try {
     const response = await fetch(googleUrl);
