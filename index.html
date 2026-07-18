@@ -437,28 +437,38 @@
                 iframe.src = currentSrc + '&_refresh=' + new Date().getTime();
             }
         } else {
-            loadData();
-        }
-    }
+         // Không dùng link Google dài ngoằng nữa, chuyển sang dùng trạm trung chuyển nội bộ
+    const GOOGLE_API_URL = "/api/data";
 
     function loadData() {
+        // BƯỚC ĐỘT PHÁ 1: Hiển thị ngay dữ liệu cũ từ RAM điện thoại (Mất 0.01 giây)
+        let oldData = localStorage.getItem("TAEKWONDO_DATA_2026");
+        if(oldData) {
+            let response = JSON.parse(oldData);
+            processData(response.tongSap, response.chiTiet);
+            if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
+            if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
+        }
+
+        // BƯỚC ĐỘT PHÁ 2: Song song đó, âm thầm đi lấy dữ liệu mới từ cô Thư ký Vercel (Mất 0.1 giây)
         fetch(GOOGLE_API_URL)
             .then(response => response.json())
             .then(response => {
                 if(response.error) {
-                    document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">${response.error}</span>`;
+                    if(!oldData) document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">${response.error}</span>`;
                     return;
                 }
+                
+                // Nếu lấy được dữ liệu mới, lưu ngay vào RAM điện thoại để dùng cho lần mở app sau
+                localStorage.setItem("TAEKWONDO_DATA_2026", JSON.stringify(response));
+                
+                // Âm thầm cập nhật lại các con số trên màn hình
                 processData(response.tongSap, response.chiTiet);
-                if (response.danhSach && response.danhSach.length > 0) {
-                    processDanhSachDangKy(response.danhSach);
-                }
-                if (response.trongTai && response.trongTai.length > 0) {
-                    processDanhSachTrongTai(response.trongTai);
-                }
+                if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
+                if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
             })
             .catch(error => {
-                document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">Đang tải...</span>`;
+                if(!oldData) document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">Đang tải...</span>`;
             });
     }
 
