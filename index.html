@@ -422,7 +422,8 @@
     let top5ChartInstance = null;
     Chart.register(ChartDataLabels);
 
-    const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbwJFhQIpeQogTkdhKhzh2Ias3OZQpPXNNoB3LSSJs9as5OrSS13qo1Mn7mL9Nj7SMGC/exec";
+    // KẾT NỐI VỚI VERCEL
+    const GOOGLE_API_URL = "/api/data";
 
     function switchTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -440,8 +441,6 @@
             loadData();
         }
     }
-
-const GOOGLE_API_URL = "/api/data";
 
     async function loadData() {
         const spinner = document.getElementById('loading') || document.querySelector('.loading');
@@ -509,7 +508,7 @@ const GOOGLE_API_URL = "/api/data";
         }
     }
 
-function processDanhSachDangKy(data) {
+    function processDanhSachDangKy(data) {
         dsDangKyDataArray = data; 
         
         let dsDonViSelect = document.getElementById('filter-ds-donvi');
@@ -938,9 +937,6 @@ function processDanhSachDangKy(data) {
         names.forEach(name => {
             let certHtml = `
                 <div class="cert-page ${withBg ? 'with-bg' : ''}">
-                    <!-- <div style="position: absolute; top: 15mm; left: 0; width: 100%; color: #dc2626; font-size: 18px; font-weight: bold;">VIET NAM<br>TAEKWONDO</div> -->
-                    <!-- <div style="position: absolute; top: 30mm; left: 0; width: 100%; color: #16a34a; font-size: 40px; font-weight: bold; text-transform: uppercase;">GIẤY CHỨNG NHẬN</div> -->
-                    
                     <div class="cert-title-1">LIÊN ĐOÀN TAEKWONDO KHÁNH HÒA<br>Chứng nhận</div>
                     <div class="cert-title-2">${name}</div>
                     <div class="cert-club">${clb}</div>
