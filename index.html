@@ -437,39 +437,56 @@
                 iframe.src = currentSrc + '&_refresh=' + new Date().getTime();
             }
         } else {
-         // Không dùng link Google dài ngoằng nữa, chuyển sang dùng trạm trung chuyển nội bộ
     const GOOGLE_API_URL = "/api/data";
 
-    function loadData() {
-        // BƯỚC ĐỘT PHÁ 1: Hiển thị ngay dữ liệu cũ từ RAM điện thoại (Mất 0.01 giây)
-        let oldData = localStorage.getItem("TAEKWONDO_DATA_2026");
-        if(oldData) {
-            let response = JSON.parse(oldData);
-            processData(response.tongSap, response.chiTiet);
-            if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
-            if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
-        }
+    async function loadData() {
+        // Tự động tìm cái thẻ Vòng Xoay trong web của ông (đảm bảo id hoặc class của ông đúng là 'loading')
+        const spinner = document.getElementById('loading') || document.querySelector('.loading');
 
-        // BƯỚC ĐỘT PHÁ 2: Song song đó, âm thầm đi lấy dữ liệu mới từ cô Thư ký Vercel (Mất 0.1 giây)
-        fetch(GOOGLE_API_URL)
-            .then(response => response.json())
-            .then(response => {
-                if(response.error) {
-                    if(!oldData) document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">${response.error}</span>`;
-                    return;
-                }
-                
-                // Nếu lấy được dữ liệu mới, lưu ngay vào RAM điện thoại để dùng cho lần mở app sau
-                localStorage.setItem("TAEKWONDO_DATA_2026", JSON.stringify(response));
-                
-                // Âm thầm cập nhật lại các con số trên màn hình
+        try {
+            // 1. Tải ngay dữ liệu cũ từ điện thoại (nếu có)
+            let oldData = localStorage.getItem("TAEKWONDO_DATA_2026");
+            if (oldData) {
+                let response = JSON.parse(oldData);
                 processData(response.tongSap, response.chiTiet);
                 if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
                 if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
-            })
-            .catch(error => {
-                if(!oldData) document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">Đang tải...</span>`;
-            });
+                
+                // Có dữ liệu là tắt vòng xoay ngay lập tức
+                if (spinner) spinner.style.display = 'none'; 
+            }
+
+            // 2. Chạy ngầm đi xin dữ liệu mới từ Vercel
+            const res = await fetch(GOOGLE_API_URL);
+            const response = await res.json();
+
+            // Nếu Vercel báo lỗi thì hiển thị lỗi
+            if (response.error) {
+                console.error("Lỗi từ trạm Vercel:", response.error);
+                if (spinner) spinner.style.display = 'none';
+                return;
+            }
+
+            // 3. Nếu có dữ liệu mới thì lưu vào điện thoại và cập nhật lên màn hình
+            localStorage.setItem("TAEKWONDO_DATA_2026", JSON.stringify(response));
+            
+            processData(response.tongSap, response.chiTiet);
+            if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
+            if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
+            
+            // Tắt vòng xoay
+            if (spinner) spinner.style.display = 'none';
+
+        } catch (error) {
+            console.error("Đứt kết nối hoặc lỗi code:", error);
+            // Dù có lỗi đứt mạng cũng phải tắt vòng xoay
+            if (spinner) spinner.style.display = 'none';
+            
+            // Nếu điện thoại chưa từng có dữ liệu cũ, báo lỗi đỏ ra màn hình
+            if (!localStorage.getItem("TAEKWONDO_DATA_2026")) {
+                document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">Đang bảo trì trạm kết nối...</span>`;
+            }
+        }
     }
 
     function processDanhSachTrongTai(data) {
