@@ -437,10 +437,13 @@
                 iframe.src = currentSrc + '&_refresh=' + new Date().getTime();
             }
         } else {
-    const GOOGLE_API_URL = "/api/data";
+            loadData();
+        }
+    }
+
+const GOOGLE_API_URL = "/api/data";
 
     async function loadData() {
-        // Tự động tìm cái thẻ Vòng Xoay trong web của ông (đảm bảo id hoặc class của ông đúng là 'loading')
         const spinner = document.getElementById('loading') || document.querySelector('.loading');
 
         try {
@@ -452,7 +455,6 @@
                 if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
                 if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
                 
-                // Có dữ liệu là tắt vòng xoay ngay lập tức
                 if (spinner) spinner.style.display = 'none'; 
             }
 
@@ -460,7 +462,6 @@
             const res = await fetch(GOOGLE_API_URL);
             const response = await res.json();
 
-            // Nếu Vercel báo lỗi thì hiển thị lỗi
             if (response.error) {
                 console.error("Lỗi từ trạm Vercel:", response.error);
                 if (spinner) spinner.style.display = 'none';
@@ -474,17 +475,15 @@
             if (response.danhSach && response.danhSach.length > 0) processDanhSachDangKy(response.danhSach);
             if (response.trongTai && response.trongTai.length > 0) processDanhSachTrongTai(response.trongTai);
             
-            // Tắt vòng xoay
             if (spinner) spinner.style.display = 'none';
 
         } catch (error) {
             console.error("Đứt kết nối hoặc lỗi code:", error);
-            // Dù có lỗi đứt mạng cũng phải tắt vòng xoay
             if (spinner) spinner.style.display = 'none';
             
-            // Nếu điện thoại chưa từng có dữ liệu cũ, báo lỗi đỏ ra màn hình
             if (!localStorage.getItem("TAEKWONDO_DATA_2026")) {
-                document.getElementById('sum-vdv').innerHTML = `<span style="color:red; font-size:12px;">Đang bảo trì trạm kết nối...</span>`;
+                let sumVdv = document.getElementById('sum-vdv');
+                if(sumVdv) sumVdv.innerHTML = `<span style="color:red; font-size:12px;">Đang kết nối lại...</span>`;
             }
         }
     }
